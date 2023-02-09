@@ -7,8 +7,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = "tentacles"
-for (name in listOf("Tentacles-API", "Tentacles-Server")) {
+rootProject.name = "omnipurpur"
+for (name in listOf("OmniPurpur-API", "OmniPurpur-Server", "OmniPurpur-Common")) {
     val projName = name.toLowerCase(Locale.ENGLISH)
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)

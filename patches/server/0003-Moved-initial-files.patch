@@ -1,0 +1,900 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Pol Vallverdu <pvallverdualcaide@gmail.com>
+Date: Thu, 9 Feb 2023 16:20:28 +0100
+Subject: [PATCH] Moved initial files
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+index d7fddab809b7514d93e7969eb574c5d6c3ae15bc..a4a6546398c733a3a3b256ddda7b75eed6d27ad5 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
++++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+@@ -33,8 +33,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+     @Nonnull
+     @Override
+     public Component getVersionMessage(@Nonnull String serverVersion) {
+-        String[] parts = serverVersion.substring("git-Tentacles-".length()).split("[-\\s]"); // Purpur // Tentacles
+-        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Tentacles", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Tentacles
++        String[] parts = serverVersion.substring("git-OmniPurpur-".length()).split("[-\\s]"); // Purpur // OmniPurpur
++        final Component updateMessage = getUpdateStatusMessage("PurpurMC/OmniPurpur", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // OmniPurpur
+         final Component history = getHistory();
+ 
+         return history != null ? Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()), history, updateMessage) : updateMessage; // Purpur
+@@ -58,7 +58,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+ 
+     private static Component getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
+         //int distance; // Purpur - use field
+-        /* // Tentacles start - disable jenkins/api checking
++        /* // OmniPurpur start - disable jenkins/api checking
+         try {
+             int jenkinsBuild = Integer.parseInt(versionInfo);
+             distance = fetchDistanceFromSiteApi(jenkinsBuild, getMinecraftVersion());
+@@ -69,7 +69,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+         */
+         versionInfo = versionInfo.replace("\"", "");
+         distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
+-        // Tentacles end
++        // OmniPurpur end
+ 
+         switch (distance) {
+             case -1:
+diff --git a/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java b/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java
+index 9bb4adc4d42cd6079352aa73c9382ede8da2ecac..32b97861aa21c7481cc308ba64935aa053b1e9ad 100644
+--- a/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java
++++ b/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java
+@@ -1,16 +1,15 @@
+-package engineer.pol.multipurpur;
++package engineer.pol.omnipurpur;
+ 
+ import com.google.common.base.Throwables;
+ import com.google.common.collect.ImmutableMap;
+-import engineer.pol.multipurpur.command.MultiPurpurCommand;
+-import engineer.pol.multipurpur.utils.EServerType;
++import engineer.pol.omnipurpur.command.MultiPurpurCommand;
++import engineer.pol.omnipurpur.common.utils.EServerType;
+ import net.minecraft.server.MinecraftServer;
+ import org.bukkit.Bukkit;
+ import org.bukkit.command.Command;
+ import org.bukkit.configuration.ConfigurationSection;
+ import org.bukkit.configuration.InvalidConfigurationException;
+ import org.bukkit.configuration.file.YamlConfiguration;
+-import org.purpurmc.purpur.command.PurpurCommand;
+ 
+ import java.io.File;
+ import java.io.IOException;
+diff --git a/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java b/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java
+index 96da4656e5b369841c4f26dc774c8430af10edde..be45b8a1dbbeb91d4003eda415ba9dd98c77c4a1 100644
+--- a/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java
++++ b/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java
+@@ -1,7 +1,8 @@
+-package engineer.pol.multipurpur;
++package engineer.pol.omnipurpur;
+ 
+-import engineer.pol.multipurpur.database.RedisClient;
+-import engineer.pol.multipurpur.utils.EServerType;
++
++import engineer.pol.omnipurpur.common.database.RedisClient;
++import engineer.pol.omnipurpur.common.utils.EServerType;
+ 
+ public class MultiPurpurEngine {
+ 
+diff --git a/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java b/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java
+index 71a69ef90e38449cb8724b3f7e831de96b340a81..536b05176ef051f853a61c12554dcbd47a4793f3 100644
+--- a/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java
++++ b/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java
+@@ -1,6 +1,6 @@
+-package engineer.pol.multipurpur.command;
++package engineer.pol.omnipurpur.command;
+ 
+-import engineer.pol.multipurpur.MultiPurpurConfig;
++import engineer.pol.omnipurpur.MultiPurpurConfig;
+ import net.minecraft.server.MinecraftServer;
+ import org.bukkit.ChatColor;
+ import org.bukkit.Location;
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index cea4447aad2d64db56a76e4ba180dc7326d2e13b..56fb6658fb6229ab1be1489fdf0a86873f676c4c 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -13,6 +13,7 @@ import com.mojang.authlib.GameProfileRepository;
+ import com.mojang.authlib.minecraft.MinecraftSessionService;
+ import com.mojang.datafixers.DataFixer;
+ import com.mojang.logging.LogUtils;
++import engineer.pol.omnipurpur.MultiPurpurEngine;
+ import it.unimi.dsi.fastutil.longs.LongIterator;
+ import java.awt.image.BufferedImage;
+ import java.io.BufferedWriter;
+@@ -312,7 +313,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     public volatile Thread shutdownThread; // Paper
+     public volatile boolean abnormalExit = false; // Paper
+     public boolean isIteratingOverLevels = false; // Paper
+-    
++
+     public gg.pufferfish.pufferfish.util.AsyncExecutor mobSpawnExecutor = new gg.pufferfish.pufferfish.util.AsyncExecutor("MobSpawning"); // Pufferfish - optimize mob spawning
+ 
+     public static <S extends MinecraftServer> S spin(Function<Thread, S> serverFactory) {
+@@ -575,7 +576,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             // Paper start - fix and optimise world upgrading
+             if (options.has("forceUpgrade")) {
+                 net.minecraft.server.Main.convertWorldButItWorks(
+-                    dimensionKey, worldSession, DataFixers.getDataFixer(), worlddimension.generator().getTypeNameForDataFixer(), options.has("eraseCache")
++                        dimensionKey, worldSession, DataFixers.getDataFixer(), worlddimension.generator().getTypeNameForDataFixer(), options.has("eraseCache")
+                 );
+             }
+             // Paper end - fix and optimise world upgrading
+@@ -639,7 +640,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+         this.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
+         this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
+-        this.connection.acceptConnections();
++        // MultiPurpur start
++        ServerConnectionListener conn;
++        if ((conn = this.getConnection()) != null) {
++            conn.acceptConnections();
++        }
++        // this.connection.acceptConnections();
++        // MultiPurpur end
+     }
+     // CraftBukkit end
+ 
+@@ -769,27 +776,27 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         // CraftBukkit end
+         if (worldserver.getWorld().getKeepSpawnInMemory()) { // Paper
+ 
+-        MinecraftServer.LOGGER.info("Preparing start region for dimension {}", worldserver.dimension().location());
+-        BlockPos blockposition = worldserver.getSharedSpawnPos();
++            MinecraftServer.LOGGER.info("Preparing start region for dimension {}", worldserver.dimension().location());
++            BlockPos blockposition = worldserver.getSharedSpawnPos();
+ 
+-        worldloadlistener.updateSpawnPos(new ChunkPos(blockposition));
+-        //ChunkProviderServer chunkproviderserver = worldserver.getChunkProvider(); // Paper - move up
++            worldloadlistener.updateSpawnPos(new ChunkPos(blockposition));
++            //ChunkProviderServer chunkproviderserver = worldserver.getChunkProvider(); // Paper - move up
+ 
+-        chunkproviderserver.getLightEngine().setTaskPerBatch(500);
+-        this.nextTickTime = Util.getMillis();
+-        // Paper start - configurable spawn reason
+-        int radiusBlocks = worldserver.paperConfig().spawn.keepSpawnLoadedRange * 16;
+-        int radiusChunks = radiusBlocks / 16 + ((radiusBlocks & 15) != 0 ? 1 : 0);
+-        int totalChunks = ((radiusChunks) * 2 + 1);
+-        totalChunks *= totalChunks;
+-        worldloadlistener.setChunkRadius(radiusBlocks / 16);
+-
+-        worldserver.addTicketsForSpawn(radiusBlocks, blockposition);
+-        // Paper end
++            chunkproviderserver.getLightEngine().setTaskPerBatch(500);
++            this.nextTickTime = Util.getMillis();
++            // Paper start - configurable spawn reason
++            int radiusBlocks = worldserver.paperConfig().spawn.keepSpawnLoadedRange * 16;
++            int radiusChunks = radiusBlocks / 16 + ((radiusBlocks & 15) != 0 ? 1 : 0);
++            int totalChunks = ((radiusChunks) * 2 + 1);
++            totalChunks *= totalChunks;
++            worldloadlistener.setChunkRadius(radiusBlocks / 16);
++
++            worldserver.addTicketsForSpawn(radiusBlocks, blockposition);
++            // Paper end
+ 
+-        // this.nextTickTime = SystemUtils.getMillis() + 10L;
+-        this.executeModerately();
+-        // Iterator iterator = this.levels.values().iterator();
++            // this.nextTickTime = SystemUtils.getMillis() + 10L;
++            this.executeModerately();
++            // Iterator iterator = this.levels.values().iterator();
+         }
+ 
+         if (true) {
+@@ -1154,7 +1161,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                     long j = i / 50L;
+ 
+                     if (this.server.getWarnOnOverload()) // CraftBukkit
+-                    MinecraftServer.LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", i, j);
++                        MinecraftServer.LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", i, j);
+                     this.nextTickTime += j * 50L;
+                     this.lastOverloadWarning = this.nextTickTime;
+                 }
+@@ -1164,19 +1171,19 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 {
+                     final long diff = curTime - tickSection;
+                     java.math.BigDecimal currentTps = TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
+-                        tps5s.add(currentTps, diff); // Purpur
++                    tps5s.add(currentTps, diff); // Purpur
+                     tps1.add(currentTps, diff);
+                     tps5.add(currentTps, diff);
+                     tps15.add(currentTps, diff);
+                     // Backwards compat with bad plugins
+-                        // Purpur start
+-                        this.recentTps[0] = tps5s.getAverage();
+-                        this.recentTps[1] = tps1.getAverage();
+-                        this.recentTps[2] = tps5.getAverage();
+-                        this.recentTps[3] = tps15.getAverage();
+-                        // Purpur end
++                    // Purpur start
++                    this.recentTps[0] = tps5s.getAverage();
++                    this.recentTps[1] = tps1.getAverage();
++                    this.recentTps[2] = tps5.getAverage();
++                    this.recentTps[3] = tps15.getAverage();
++                    // Purpur end
+                     // Paper end
+-                        lagging = recentTps[0] < org.purpurmc.purpur.PurpurConfig.laggingThreshold; // Purpur
++                    lagging = recentTps[0] < org.purpurmc.purpur.PurpurConfig.laggingThreshold; // Purpur
+                     tickSection = curTime;
+                 }
+                 // Spigot end
+@@ -1194,13 +1201,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 this.tickServer(this::haveTime);
+                 //this.profiler.popPush("nextTickWait"); // Purpur
+                 this.mayHaveDelayedTasks = true;
+-                    // Purpur start - tps catchup
+-                    if (org.purpurmc.purpur.PurpurConfig.tpsCatchup) {
+-                        this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
+-                    } else {
+-                        this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1000000L + 50L;
+-                    }
+-                    // Purpur end - tps catchup
++                // Purpur start - tps catchup
++                if (org.purpurmc.purpur.PurpurConfig.tpsCatchup) {
++                    this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
++                } else {
++                    this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1000000L + 50L;
++                }
++                // Purpur end - tps catchup
+                 this.waitUntilNextTick();
+                 //this.profiler.pop(); // Purpur
+                 //this.endMetricsRecordingTick(); // Purpur
+@@ -1469,7 +1476,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         io.papermc.paper.util.CachedLists.reset(); // Paper
+         // Paper start - move executeAll() into full server tick timing
+         //try (co.aikar.timings.Timing ignored = MinecraftTimings.processTasksTimer.startTiming()) { // Purpur
+-            this.runAllTasks();
++        this.runAllTasks();
+         //} // Purpur
+         // Paper end
+         // Paper start
+@@ -1529,7 +1536,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 ServerPlayer entityplayer = (ServerPlayer) entityhuman;
+                 long playerTime = entityplayer.getPlayerTime();
+                 ClientboundSetTimePacket packet = (playerTime == dayTime) ? worldPacket :
+-                    new ClientboundSetTimePacket(worldTime, playerTime, doDaylight);
++                        new ClientboundSetTimePacket(worldTime, playerTime, doDaylight);
+                 entityplayer.connection.send(packet); // Add support for per player time
+             }
+         }
+@@ -1591,7 +1598,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+         //this.profiler.popPush("connection"); // Purpur
+         //MinecraftTimings.connectionTimer.startTiming(); // Spigot // Purpur
+-        this.getConnection().tick();
++        // MultiPurpur start
++        ServerConnectionListener conn;
++        if ((conn = this.getConnection()) != null) {
++            conn.tick();
++        }
++        // this.getConnection().tick();
++        // MultiPurpur end
+         //MinecraftTimings.connectionTimer.stopTiming(); // Spigot // Purpur
+         //this.profiler.popPush("players"); // Purpur
+         //MinecraftTimings.playerListTimer.startTiming(); // Spigot // Paper // Purpur
+@@ -1904,7 +1917,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @Nullable
+     public ServerConnectionListener getConnection() {
+-        return this.connection == null ? this.connection = new ServerConnectionListener(this) : this.connection; // Spigot
++        return this.connection == null ?
++                (MultiPurpurEngine.isSlave() ? this.connection = new ServerConnectionListener(this) : null) :
++                this.connection; // Spigot  // MultiPurpur
+     }
+ 
+     public boolean isReady() {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 46858fb57f122033a68aeb4ad3943132a677fb46..091f8b9d22c7491d47b6649e4e03a2be4ff1d1f2 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -19,6 +19,9 @@ import java.util.Locale;
+ import java.util.Optional;
+ import java.util.function.BooleanSupplier;
+ import javax.annotation.Nullable;
++
++import engineer.pol.omnipurpur.MultiPurpurConfig;
++import engineer.pol.omnipurpur.MultiPurpurEngine;
+ import net.minecraft.DefaultUncaughtExceptionHandler;
+ import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
+ import net.minecraft.SharedConstants;
+@@ -241,46 +244,56 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.setEnforceWhitelist(dedicatedserverproperties.enforceWhitelist);
+         // this.worldData.setGameType(dedicatedserverproperties.gamemode); // CraftBukkit - moved to world loading
+         DedicatedServer.LOGGER.info("Default game type: {}", dedicatedserverproperties.gamemode);
+-        // Paper start - Unix domain socket support
+-        java.net.SocketAddress bindAddress;
+-        if (this.getLocalIp().startsWith("unix:")) {
+-            if (!io.netty.channel.epoll.Epoll.isAvailable()) {
+-                DedicatedServer.LOGGER.error("**** INVALID CONFIGURATION!");
+-                DedicatedServer.LOGGER.error("You are trying to use a Unix domain socket but you're not on a supported OS.");
+-                return false;
+-            } else if (!io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled && !org.spigotmc.SpigotConfig.bungee) {
+-                DedicatedServer.LOGGER.error("**** INVALID CONFIGURATION!");
+-                DedicatedServer.LOGGER.error("Unix domain sockets require IPs to be forwarded from a proxy.");
+-                return false;
+-            }
+-            bindAddress = new io.netty.channel.unix.DomainSocketAddress(this.getLocalIp().substring("unix:".length()));
+-        } else {
+-        InetAddress inetaddress = null;
+ 
+-        if (!this.getLocalIp().isEmpty()) {
+-            inetaddress = InetAddress.getByName(this.getLocalIp());
+-        }
++        // MultiPurpur start
++        LOGGER.info("Starting MultiPurpur...");
++        MultiPurpurEngine.init();
++        LOGGER.info("Server is a " + MultiPurpurConfig.serverType.getKey());
++        if (MultiPurpurEngine.isMaster()) {
++            LOGGER.info("Not binding to any port, as this is a master server.");
++        } else {
++            // Paper start - Unix domain socket support
++            java.net.SocketAddress bindAddress;
++            if (this.getLocalIp().startsWith("unix:")) {
++                if (!io.netty.channel.epoll.Epoll.isAvailable()) {
++                    DedicatedServer.LOGGER.error("**** INVALID CONFIGURATION!");
++                    DedicatedServer.LOGGER.error("You are trying to use a Unix domain socket but you're not on a supported OS.");
++                    return false;
++                } else if (!io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled && !org.spigotmc.SpigotConfig.bungee) {
++                    DedicatedServer.LOGGER.error("**** INVALID CONFIGURATION!");
++                    DedicatedServer.LOGGER.error("Unix domain sockets require IPs to be forwarded from a proxy.");
++                    return false;
++                }
++                bindAddress = new io.netty.channel.unix.DomainSocketAddress(this.getLocalIp().substring("unix:".length()));
++            } else {
++                InetAddress inetaddress = null;
+ 
+-        if (this.getPort() < 0) {
+-            this.setPort(dedicatedserverproperties.serverPort);
+-        }
+-        bindAddress = new java.net.InetSocketAddress(inetaddress, this.getPort());
+-        }
+-        // Paper end
++                if (!this.getLocalIp().isEmpty()) {
++                    inetaddress = InetAddress.getByName(this.getLocalIp());
++                }
+ 
+-        this.initializeKeyPair();
+-        DedicatedServer.LOGGER.info("Starting Minecraft server on {}:{}", this.getLocalIp().isEmpty() ? "*" : this.getLocalIp(), this.getPort());
++                if (this.getPort() < 0) {
++                    this.setPort(dedicatedserverproperties.serverPort);
++                }
++                bindAddress = new java.net.InetSocketAddress(inetaddress, this.getPort());
++            }
++            // Paper end
+ 
+-        try {
+-            this.getConnection().bind(bindAddress); // Paper - Unix domain socket support
+-        } catch (IOException ioexception) {
+-            DedicatedServer.LOGGER.warn("**** FAILED TO BIND TO PORT!");
+-            DedicatedServer.LOGGER.warn("The exception was: {}", ioexception.toString());
+-            DedicatedServer.LOGGER.warn("Perhaps a server is already running on that port?");
+-            return false;
++            this.initializeKeyPair();
++            DedicatedServer.LOGGER.info("Starting Minecraft server on {}:{}", this.getLocalIp().isEmpty() ? "*" : this.getLocalIp(), this.getPort());
++            try {
++                this.getConnection().bind(bindAddress); // Paper - Unix domain socket support
++            } catch (IOException ioexception) {
++                DedicatedServer.LOGGER.warn("**** FAILED TO BIND TO PORT!");
++                DedicatedServer.LOGGER.warn("The exception was: {}", ioexception.toString());
++                DedicatedServer.LOGGER.warn("Perhaps a server is already running on that port?");
++                return false;
++            }
+         }
++        // MultiPurpur end
++
+         // Purpur start
+-        if (org.purpurmc.purpur.PurpurConfig.useUPnP) {
++        if (org.purpurmc.purpur.PurpurConfig.useUPnP && MultiPurpurEngine.isSlave()) { // MultiPurpur - checking if it's slave
+             LOGGER.info("[UPnP] Attempting to start UPnP port forwarding service...");
+             if (dev.omega24.upnp4j.UPnP4J.isUPnPAvailable()) {
+                 if (dev.omega24.upnp4j.UPnP4J.isOpen(this.getPort(), dev.omega24.upnp4j.util.Protocol.TCP)) {
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 59125a25e4cdbbc378f628b1c842236431a70885..32a31d9ed07ff71c8698a6122875994fc018f201 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -424,21 +424,21 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 }
+             }
+         } else
+-        // Purpur end
++            // Purpur end
+ 
+-        if (this.keepAlivePending) {
+-            if (!this.processedDisconnect && elapsedTime >= KEEPALIVE_LIMIT) { // check keepalive limit, don't fire if already disconnected
+-                ServerGamePacketListenerImpl.LOGGER.warn("{} was kicked due to keepalive timeout!", this.player.getScoreboardName()); // more info
+-                this.disconnect(Component.translatable("disconnect.timeout", new Object[0]), org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT); // Paper - kick event cause
+-            }
+-        } else {
+-            if (elapsedTime >= 15000L) { // 15 seconds
+-                this.keepAlivePending = true;
+-                this.keepAliveTime = currentTime;
+-                this.keepAliveChallenge = currentTime;
+-                this.send(new ClientboundKeepAlivePacket(this.keepAliveChallenge));
++            if (this.keepAlivePending) {
++                if (!this.processedDisconnect && elapsedTime >= KEEPALIVE_LIMIT) { // check keepalive limit, don't fire if already disconnected
++                    ServerGamePacketListenerImpl.LOGGER.warn("{} was kicked due to keepalive timeout!", this.player.getScoreboardName()); // more info
++                    this.disconnect(Component.translatable("disconnect.timeout", new Object[0]), org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT); // Paper - kick event cause
++                }
++            } else {
++                if (elapsedTime >= 15000L) { // 15 seconds
++                    this.keepAlivePending = true;
++                    this.keepAliveTime = currentTime;
++                    this.keepAliveChallenge = currentTime;
++                    this.send(new ClientboundKeepAlivePacket(this.keepAliveChallenge));
++                }
+             }
+-        }
+         // Paper end
+ 
+         //this.server.getProfiler().pop(); // Purpur
+@@ -584,7 +584,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handlePlayerInput(ServerboundPlayerInputPacket packet) {
++    public void handlePlayerInput(ServerboundPlayerInputPacket packet) { // TODO: Change input player for all slaves
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         this.player.setPlayerInput(packet.getXxa(), packet.getZza(), packet.isJumping(), packet.isShiftKeyDown());
+     }
+@@ -602,7 +602,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handleMoveVehicle(ServerboundMoveVehiclePacket packet) {
++    public void handleMoveVehicle(ServerboundMoveVehiclePacket packet) { // TODO: Move vehicle of player for all slaves
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (ServerGamePacketListenerImpl.containsInvalidValues(packet.getX(), packet.getY(), packet.getZ(), packet.getYRot(), packet.getXRot())) {
+             this.disconnect(Component.translatable("multiplayer.disconnect.invalid_vehicle_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_VEHICLE_MOVEMENT); // Paper - kick event cause
+@@ -670,16 +670,16 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+                 // Paper start - Prevent moving into unloaded chunks
+                 if (player.level.paperConfig().chunks.preventMovingIntoUnloadedChunks && (
+-                    !worldserver.areChunksLoadedForMove(this.player.getBoundingBox().expandTowards(new Vec3(toX, toY, toZ).subtract(this.player.position()))) ||
+-                        !worldserver.areChunksLoadedForMove(entity.getBoundingBox().expandTowards(new Vec3(toX, toY, toZ).subtract(entity.position())))
+-                    )) {
++                        !worldserver.areChunksLoadedForMove(this.player.getBoundingBox().expandTowards(new Vec3(toX, toY, toZ).subtract(this.player.position()))) ||
++                                !worldserver.areChunksLoadedForMove(entity.getBoundingBox().expandTowards(new Vec3(toX, toY, toZ).subtract(entity.position())))
++                )) {
+                     this.connection.send(new ClientboundMoveVehiclePacket(entity));
+                     return;
+                 }
+                 // Paper end
+ 
+                 if (d10 - d9 > Math.max(100.0D, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner()) {
+-                // CraftBukkit end
++                    // CraftBukkit end
+                     ServerGamePacketListenerImpl.LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", new Object[]{entity.getName().getString(), this.player.getName().getString(), d6, d7, d8});
+                     this.connection.send(new ClientboundMoveVehiclePacket(entity));
+                     return;
+@@ -840,7 +840,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handleAcceptTeleportPacket(ServerboundAcceptTeleportationPacket packet) {
++    public void handleAcceptTeleportPacket(ServerboundAcceptTeleportationPacket packet) { // TODO: Maybe needs sharing through slaves?
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (packet.getId() == this.awaitingTeleport) {
+             if (this.awaitingPositionFromClient == null) {
+@@ -864,7 +864,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handleRecipeBookSeenRecipePacket(ServerboundRecipeBookSeenRecipePacket packet) {
++    public void handleRecipeBookSeenRecipePacket(ServerboundRecipeBookSeenRecipePacket packet) { // TODO: Maybe update with redis?
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         Optional<? extends Recipe<?>> optional = this.server.getRecipeManager().byKey(packet.getRecipe()); // CraftBukkit - decompile error
+         ServerRecipeBook recipebookserver = this.player.getRecipeBook();
+@@ -874,13 +874,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handleRecipeBookChangeSettingsPacket(ServerboundRecipeBookChangeSettingsPacket packet) {
++    public void handleRecipeBookChangeSettingsPacket(ServerboundRecipeBookChangeSettingsPacket packet) { // TODO: Maybe update with redis?
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         this.player.getRecipeBook().setBookSetting(packet.getBookType(), packet.isOpen(), packet.isFiltering());
+     }
+ 
+     @Override
+-    public void handleSeenAdvancements(ServerboundSeenAdvancementsPacket packet) {
++    public void handleSeenAdvancements(ServerboundSeenAdvancementsPacket packet) { // TODO: Maybe update with redis?
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (packet.getAction() == ServerboundSeenAdvancementsPacket.Action.OPENED_TAB) {
+             ResourceLocation minecraftkey = packet.getTab();
+@@ -895,7 +895,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+     // Paper start
+     private static final java.util.concurrent.ExecutorService TAB_COMPLETE_EXECUTOR = java.util.concurrent.Executors.newFixedThreadPool(4,
+-        new com.google.common.util.concurrent.ThreadFactoryBuilder().setDaemon(true).setNameFormat("Async Tab Complete Thread - #%d").setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(net.minecraft.server.MinecraftServer.LOGGER)).build());
++            new com.google.common.util.concurrent.ThreadFactoryBuilder().setDaemon(true).setNameFormat("Async Tab Complete Thread - #%d").setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(net.minecraft.server.MinecraftServer.LOGGER)).build());
+     // Paper end
+     @Override
+     public void handleCustomCommandSuggestions(ServerboundCommandSuggestionPacket packet) {
+@@ -920,11 +920,11 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         // Paper end - Don't suggest if tab-complete is disabled
+         // Paper start - async tab completion
+         TAB_COMPLETE_EXECUTOR.execute(() -> {
+-        StringReader stringreader = new StringReader(packet.getCommand());
++            StringReader stringreader = new StringReader(packet.getCommand());
+ 
+-        if (stringreader.canRead() && stringreader.peek() == '/') {
+-            stringreader.skip();
+-        }
++            if (stringreader.canRead() && stringreader.peek() == '/') {
++                stringreader.skip();
++            }
+             final String command = packet.getCommand();
+             final com.destroystokyo.paper.event.server.AsyncTabCompleteEvent event = new com.destroystokyo.paper.event.server.AsyncTabCompleteEvent(this.getCraftPlayer(), command, true, null);
+             event.callEvent();
+@@ -970,7 +970,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handleSetCommandBlock(ServerboundSetCommandBlockPacket packet) {
++    public void handleSetCommandBlock(ServerboundSetCommandBlockPacket packet) { // TODO: Maybe update to master?
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (!this.server.isCommandBlockEnabled()) {
+             this.player.sendSystemMessage(Component.translatable("advMode.notEnabled"));
+@@ -1037,7 +1037,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     }
+ 
+     @Override
+-    public void handleSetCommandMinecart(ServerboundSetCommandMinecartPacket packet) {
++    public void handleSetCommandMinecart(ServerboundSetCommandMinecartPacket packet) { // TODO: Maybe set to master?
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel());
+         if (!this.server.isCommandBlockEnabled()) {
+             this.player.sendSystemMessage(Component.translatable("advMode.notEnabled"));
+@@ -1256,7 +1256,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 if (byteLength > 256 * 4) {
+                     ServerGamePacketListenerImpl.LOGGER.warn(this.player.getScoreboardName() + " tried to send a book with with a page too large!");
+                     org.purpurmc.purpur.event.player.PlayerBookTooLargeEvent event = new org.purpurmc.purpur.event.player.PlayerBookTooLargeEvent(player.getBukkitEntity(), itemstack.asBukkitCopy()); if (event.shouldKickPlayer()) // Purpur
+-                    server.scheduleOnMain(() -> this.disconnect("Book too large!", org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION)); // Paper - kick event cause
++                        server.scheduleOnMain(() -> this.disconnect("Book too large!", org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION)); // Paper - kick event cause
+                     return;
+                 }
+                 byteTotal += byteLength;
+@@ -1280,7 +1280,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             if (byteTotal > byteAllowed) {
+                 ServerGamePacketListenerImpl.LOGGER.warn(this.player.getScoreboardName() + " tried to send too large of a book. Book Size: " + byteTotal + " - Allowed:  "+ byteAllowed + " - Pages: " + pageList.size());
+                 org.purpurmc.purpur.event.player.PlayerBookTooLargeEvent event = new org.purpurmc.purpur.event.player.PlayerBookTooLargeEvent(player.getBukkitEntity(), itemstack.asBukkitCopy()); if (event.shouldKickPlayer()) // Purpur
+-                server.scheduleOnMain(() -> this.disconnect("Book too large!", org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION)); // Paper - kick event cause
++                    server.scheduleOnMain(() -> this.disconnect("Book too large!", org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION)); // Paper - kick event cause
+                 return;
+             }
+         }
+@@ -1436,7 +1436,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT); // Paper - kick event cause
+             ServerGamePacketListenerImpl.LOGGER.warn(String.format("Disconnected on move player packet. Invalid data: x=%b, y=%b, z=%b, yaw=%b, pitch=%b", invalidX, invalidY, invalidZ, invalidYaw, invalidPitch));
+             // Purpur end
+-        } else {
++        } else { // TODO: Move player for all slaves
+             ServerLevel worldserver = this.player.getLevel();
+ 
+             if (!this.player.wonGame && !this.player.isImmobile()) { // CraftBukkit
+@@ -1532,7 +1532,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                                 float f2 = this.player.isFallFlying() ? 300.0F : 100.0F;
+ 
+                                 if (d11 - d10 > Math.max(f2, Math.pow((double) (org.spigotmc.SpigotConfig.movedTooQuicklyMultiplier * (float) i * speed), 2)) && !this.isSingleplayerOwner()) {
+-                                // CraftBukkit end
++                                    // CraftBukkit end
+                                     ServerGamePacketListenerImpl.LOGGER.warn("{} moved too quickly! {},{},{}", new Object[]{this.player.getName().getString(), d7, d8, d9});
+                                     this.teleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYRot(), this.player.getXRot());
+                                     return;
+@@ -1717,7 +1717,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         final List<AABB> collisions = io.papermc.paper.util.CachedLists.getTempCollisionList();
+         try {
+             io.papermc.paper.util.CollisionUtil.getCollisions(world, entity, newBox, collisions, false, true,
+-                true, false, null, null);
++                    true, false, null, null);
+ 
+             for (int i = 0, len = collisions.size(); i < len; ++i) {
+                 final AABB box = collisions.get(i);
+@@ -2035,7 +2035,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                     int i = this.player.level.getMaxBuildHeight();
+ 
+                     if (blockposition.getY() < i) {
+-                    if (this.awaitingPositionFromClient == null && this.player.distanceToSqr((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D) < 64.0D && (worldserver.mayInteract(this.player, blockposition)  || (worldserver.paperConfig().spawn.allowUsingSignsInsideSpawnProtection && worldserver.getBlockState(blockposition).getBlock() instanceof net.minecraft.world.level.block.SignBlock))) { // Paper - sign check
++                        if (this.awaitingPositionFromClient == null && this.player.distanceToSqr((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D) < 64.0D && (worldserver.mayInteract(this.player, blockposition)  || (worldserver.paperConfig().spawn.allowUsingSignsInsideSpawnProtection && worldserver.getBlockState(blockposition).getBlock() instanceof net.minecraft.world.level.block.SignBlock))) { // Paper - sign check
+                             this.player.stopUsingItem(); // CraftBukkit - SPIGOT-4706
+                             InteractionResult enuminteractionresult = this.player.gameMode.useItemOn(this.player, worldserver, itemstack, enumhand, movingobjectpositionblock);
+ 
+@@ -2043,7 +2043,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                                 MutableComponent ichatmutablecomponent = Component.translatable("build.tooHigh", i - 1).withStyle(ChatFormatting.RED);
+ 
+                                 this.player.sendSystemMessage(ichatmutablecomponent, true);
+-                        } else if (enuminteractionresult.shouldSwing() && !this.player.gameMode.interactResult) { // Paper
++                            } else if (enuminteractionresult.shouldSwing() && !this.player.gameMode.interactResult) { // Paper
+                                 this.player.swing(enumhand, true);
+                             }
+                         }
+@@ -2293,32 +2293,32 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         // CraftBukkit end
+         if (ServerGamePacketListenerImpl.isChatMessageIllegal(packet.message())) {
+             this.server.scheduleOnMain(() -> { // Paper - push to main for event firing
+-            this.disconnect(Component.translatable("multiplayer.disconnect.illegal_characters"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_CHARACTERS); // Paper - add cause
++                this.disconnect(Component.translatable("multiplayer.disconnect.illegal_characters"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_CHARACTERS); // Paper - add cause
+             }); // Paper - push to main for event firing
+         } else {
+             Optional<LastSeenMessages> optional = this.tryHandleChat(packet.message(), packet.timeStamp(), packet.lastSeenMessages());
+ 
+             if (optional.isPresent()) {
+                 // this.server.submit(() -> { // CraftBukkit - async chat
+-                    PlayerChatMessage playerchatmessage;
++                PlayerChatMessage playerchatmessage;
+ 
+-                    try {
+-                        playerchatmessage = this.getSignedMessage(packet, (LastSeenMessages) optional.get());
+-                    } catch (SignedMessageChain.DecodeException signedmessagechain_a) {
+-                        this.handleMessageDecodeFailure(signedmessagechain_a);
+-                        return;
+-                    }
++                try {
++                    playerchatmessage = this.getSignedMessage(packet, (LastSeenMessages) optional.get());
++                } catch (SignedMessageChain.DecodeException signedmessagechain_a) {
++                    this.handleMessageDecodeFailure(signedmessagechain_a);
++                    return;
++                }
+ 
+-                    CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
+-                    CompletableFuture<net.minecraft.network.chat.ChatDecorator.Result> completablefuture1 = this.server.getChatDecorator().decorate(this.player, null, playerchatmessage.decoratedContent()); // Paper
++                CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
++                CompletableFuture<net.minecraft.network.chat.ChatDecorator.Result> completablefuture1 = this.server.getChatDecorator().decorate(this.player, null, playerchatmessage.decoratedContent()); // Paper
+ 
+-                    this.chatMessageChain.append((executor) -> {
+-                        return CompletableFuture.allOf(completablefuture, completablefuture1).thenAcceptAsync((ovoid) -> {
+-                            PlayerChatMessage playerchatmessage1 = playerchatmessage.filter(((FilteredText) completablefuture.join()).mask()).withResult(completablefuture1.join()); // Paper
++                this.chatMessageChain.append((executor) -> {
++                    return CompletableFuture.allOf(completablefuture, completablefuture1).thenAcceptAsync((ovoid) -> {
++                        PlayerChatMessage playerchatmessage1 = playerchatmessage.filter(((FilteredText) completablefuture.join()).mask()).withResult(completablefuture1.join()); // Paper
+ 
+-                            this.broadcastChatMessage(playerchatmessage1);
+-                        }, this.server.chatExecutor); // CraftBukkit - async chat
+-                    });
++                        this.broadcastChatMessage(playerchatmessage1);
++                    }, this.server.chatExecutor); // CraftBukkit - async chat
++                });
+                 // }); // CraftBukkit - async chat
+             }
+ 
+@@ -2329,7 +2329,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+     public void handleChatCommand(ServerboundChatCommandPacket packet) {
+         if (ServerGamePacketListenerImpl.isChatMessageIllegal(packet.command())) {
+             this.server.scheduleOnMain(() -> { // Paper - push to main for event firing
+-            this.disconnect(Component.translatable("multiplayer.disconnect.illegal_characters"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_CHARACTERS); // Paper
++                this.disconnect(Component.translatable("multiplayer.disconnect.illegal_characters"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_CHARACTERS); // Paper
+             }); // Paper - push to main for event firing
+         } else {
+             Optional<LastSeenMessages> optional = this.tryHandleChat(packet.command(), packet.timeStamp(), packet.lastSeenMessages());
+@@ -2348,7 +2348,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         // CraftBukkit start
+         String command = "/" + packet.command();
+         if (org.spigotmc.SpigotConfig.logCommands) { // Paper
+-        ServerGamePacketListenerImpl.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + command);
++            ServerGamePacketListenerImpl.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + command);
+         } // Paper
+ 
+         PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(this.getCraftPlayer(), command, new LazyPlayerSet(this.server));
+@@ -2413,7 +2413,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         if (!this.updateChatOrder(timestamp)) {
+             ServerGamePacketListenerImpl.LOGGER.warn("{} sent out-of-order chat: '{}': {} > {}", this.player.getName().getString(), message, this.lastChatTimeStamp.get().getEpochSecond(), timestamp.getEpochSecond()); // Paper
+             this.server.scheduleOnMain(() -> { // Paper - push to main
+-            this.disconnect(Component.translatable("multiplayer.disconnect.out_of_order_chat"), org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event ca
++                this.disconnect(Component.translatable("multiplayer.disconnect.out_of_order_chat"), org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event ca
+             }); // Paper - push to main
+             return Optional.empty();
+         } else if (this.player.isRemoved() || this.player.getChatVisibility() == ChatVisiblity.HIDDEN) { // CraftBukkit - dead men tell no tales
+@@ -2477,7 +2477,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             this.handleCommand(s);
+         } else if (this.player.getChatVisibility() == ChatVisiblity.SYSTEM) {
+             // Do nothing, this is coming from a plugin
+-        // Paper start
++            // Paper start
+         } else if (true) {
+             final ChatProcessor cp = new ChatProcessor(this.server, this.player, original, async);
+             cp.process();
+@@ -2588,7 +2588,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         // Paper End
+         //co.aikar.timings.MinecraftTimings.playerCommandTimer.startTiming(); // Paper // Purpur
+         if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
+-        this.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + s);
++            this.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + s);
+ 
+         CraftPlayer player = this.getCraftPlayer();
+ 
+@@ -2887,7 +2887,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                             }
+ 
+                             if (event.isCancelled()) {
+-                            ServerGamePacketListenerImpl.this.player.containerMenu.sendAllDataToRemote(); // Paper - Refresh player inventory
++                                ServerGamePacketListenerImpl.this.player.containerMenu.sendAllDataToRemote(); // Paper - Refresh player inventory
+                                 return;
+                             }
+                             // CraftBukkit end
+@@ -2967,10 +2967,10 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+     private void callPlayerUseUnknownEntityEvent(ServerboundInteractPacket packet, InteractionHand hand) {
+         this.cserver.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent(
+-            this.getCraftPlayer(),
+-            packet.getEntityId(),
+-            packet.getActionType() == ServerboundInteractPacket.ActionType.ATTACK,
+-            hand == InteractionHand.MAIN_HAND ? EquipmentSlot.HAND : EquipmentSlot.OFF_HAND
++                this.getCraftPlayer(),
++                packet.getEntityId(),
++                packet.getActionType() == ServerboundInteractPacket.ActionType.ATTACK,
++                hand == InteractionHand.MAIN_HAND ? EquipmentSlot.HAND : EquipmentSlot.OFF_HAND
+         ));
+     }
+     // Paper end
+@@ -3357,7 +3357,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             } else {
+                 // Paper start - fire event for clicking recipes in the recipe book
+                 com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent event = new com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent(
+-                    player.getBukkitEntity(), org.bukkit.craftbukkit.util.CraftNamespacedKey.fromMinecraft(packet.getRecipe()), packet.isShiftDown());
++                        player.getBukkitEntity(), org.bukkit.craftbukkit.util.CraftNamespacedKey.fromMinecraft(packet.getRecipe()), packet.isShiftDown());
+                 if (event.callEvent() && this.player.containerMenu instanceof RecipeBookMenu<?> recipeBookMenu) { // check if inventory changed during event handling
+                     this.server.getRecipeManager().byKey(org.bukkit.craftbukkit.util.CraftNamespacedKey.toMinecraft(event.getRecipe())).ifPresent((irecipe) -> {
+                         recipeBookMenu.handlePlacement(event.isMakeAll(), irecipe, this.player);
+@@ -3440,19 +3440,19 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 itemstack = CraftItemStack.asNMSCopy(event.getCursor());
+ 
+                 switch (event.getResult()) {
+-                case ALLOW:
+-                    // Plugin cleared the id / stacksize checks
+-                    flag2 = true;
+-                    break;
+-                case DEFAULT:
+-                    break;
+-                case DENY:
+-                    // Reset the slot
+-                    if (packet.getSlotNum() >= 0) {
+-                        this.player.connection.send(new ClientboundContainerSetSlotPacket(this.player.inventoryMenu.containerId, this.player.inventoryMenu.incrementStateId(), packet.getSlotNum(), this.player.inventoryMenu.getSlot(packet.getSlotNum()).getItem()));
+-                        this.player.connection.send(new ClientboundContainerSetSlotPacket(-1, this.player.inventoryMenu.incrementStateId(), -1, ItemStack.EMPTY));
+-                    }
+-                    return;
++                    case ALLOW:
++                        // Plugin cleared the id / stacksize checks
++                        flag2 = true;
++                        break;
++                    case DEFAULT:
++                        break;
++                    case DENY:
++                        // Reset the slot
++                        if (packet.getSlotNum() >= 0) {
++                            this.player.connection.send(new ClientboundContainerSetSlotPacket(this.player.inventoryMenu.containerId, this.player.inventoryMenu.incrementStateId(), packet.getSlotNum(), this.player.inventoryMenu.getSlot(packet.getSlotNum()).getItem()));
++                            this.player.connection.send(new ClientboundContainerSetSlotPacket(-1, this.player.inventoryMenu.incrementStateId(), -1, ItemStack.EMPTY));
++                        }
++                        return;
+                 }
+             }
+             // CraftBukkit end
+@@ -3508,7 +3508,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             if (!tileentitysign.isEditable() || !this.player.getUUID().equals(tileentitysign.getPlayerWhoMayEdit())) {
+                 ServerGamePacketListenerImpl.LOGGER.warn("Player {} just tried to change non-editable sign", this.player.getName().getString());
+                 if (this.player.distanceToSqr(blockposition.getX(), blockposition.getY(), blockposition.getZ()) < 32 * 32) // Paper
+-                this.send(tileentity.getUpdatePacket()); // CraftBukkit
++                    this.send(tileentity.getUpdatePacket()); // CraftBukkit
+                 return;
+             }
+ 
+@@ -3563,20 +3563,20 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 keepAlives.clear(); // we got a valid response, lets roll with it and forget the rest
+             }
+         } else
+-        // Purpur end
+-        //PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel()); // CraftBukkit // Paper - This shouldn't be on the main thread
+-        if (this.keepAlivePending && packet.getId() == this.keepAliveChallenge) {
+-            int i = (int) (Util.getMillis() - this.keepAliveTime);
+-
+-            this.player.latency = (this.player.latency * 3 + i) / 4;
+-            this.keepAlivePending = false;
+-        } else if (!this.isSingleplayerOwner()) {
+-            // Paper start - This needs to be handled on the main thread for plugins
+-            server.submit(() -> {
+-            this.disconnect(Component.translatable("disconnect.timeout"), org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT); // Paper - kick event cause
+-            });
+-            // Paper end
+-        }
++            // Purpur end
++            //PacketUtils.ensureRunningOnSameThread(packet, this, this.player.getLevel()); // CraftBukkit // Paper - This shouldn't be on the main thread
++            if (this.keepAlivePending && packet.getId() == this.keepAliveChallenge) {
++                int i = (int) (Util.getMillis() - this.keepAliveTime);
++
++                this.player.latency = (this.player.latency * 3 + i) / 4;
++                this.keepAlivePending = false;
++            } else if (!this.isSingleplayerOwner()) {
++                // Paper start - This needs to be handled on the main thread for plugins
++                server.submit(() -> {
++                    this.disconnect(Component.translatable("disconnect.timeout"), org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT); // Paper - kick event cause
++                });
++                // Paper end
++            }
+ 
+     }
+ 
+@@ -3639,13 +3639,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+                 ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t unregister custom payload", ex);
+                 this.disconnect("Invalid payload UNREGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
+             }
+-        // Purpur start
++            // Purpur start
+         } else if (packet.identifier.equals(PURPUR_CLIENT)) {
+             try {
+                 player.purpurClient = true;
+             } catch (Exception ignore) {
+             }
+-        // Purpur end
++            // Purpur end
+         } else {
+             try {
+                 byte[] data = new byte[packet.data.readableBytes()];
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index e4e05d8c0342411f9f2194b7436f5bb60afa0902..891daf58e212cdfb372d0d66210a01866d8f36d5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -262,7 +262,7 @@ import javax.annotation.Nullable; // Paper
+ import javax.annotation.Nonnull; // Paper
+ 
+ public final class CraftServer implements Server {
+-    private final String serverName = "Tentacles"; // Paper // Purpur // Tentacles
++    private final String serverName = "OmniPurpur"; // Paper // Purpur // OmniPurpur
+     private final String serverVersion;
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final Logger logger = Logger.getLogger("Minecraft");
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 576cd8e20982bb20d10213b6c7a229428eec1c2f..7023f4d6c44b12c537f62633b771adfffea58337 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -180,6 +180,14 @@ public class Main {
+                         .describedAs("Yml file");
+                 // Purpur end
+ 
++                // MultiPurpur Start
++                acceptsAll(asList("multipurpur", "multipurpur-settings"), "File for multipurpur settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("multipurpur.yml"))
++                        .describedAs("Yml file");
++                // MultiPurpur end
++
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 9c18acf824ea4d364e31cdee94a4bff2e21bcd0f..3fb2977920c6c447d9aa3ce7bccc04f4ecc8f82a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.tentacles/tentacles-api/pom.properties"); // Purpur // Tentacles
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.omnipurpur/omnipurpur-api/pom.properties"); // Purpur // OmniPurpur
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
+diff --git a/src/main/java/org/spigotmc/RestartCommand.java b/src/main/java/org/spigotmc/RestartCommand.java
+index 160115bf8a153ff981ba308599d22c4c08026fb6..343af25cc19c651e5ac71706d301eb746545b779 100644
+--- a/src/main/java/org/spigotmc/RestartCommand.java
++++ b/src/main/java/org/spigotmc/RestartCommand.java
+@@ -4,6 +4,7 @@ import java.io.File;
+ import java.util.List;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.level.ServerPlayer;
++import net.minecraft.server.network.ServerConnectionListener;
+ import org.bukkit.command.Command;
+ import org.bukkit.command.CommandSender;
+ 
+@@ -126,7 +127,13 @@ public class RestartCommand extends Command
+     private static void closeSocket()
+     {
+         // Close the socket so we can rebind with the new process
+-        MinecraftServer.getServer().getConnection().stop();
++        // MultiPurpur start
++        ServerConnectionListener conn;
++        if ((conn = MinecraftServer.getServer().getConnection()) != null) {
++            conn.stop();
++        }
++        // MinecraftServer.getServer().getConnection().stop();
++        // MultiPurpur end
+ 
+         // Give time for it to kick in
+         try

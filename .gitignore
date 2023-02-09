@@ -52,7 +52,7 @@ manifest.mf
 run/
 
 build-data/
-Tentacles-API
-Tentacles-MojangAPI
-Tentacles-Server
+OmniPurpur-API
+OmniPurpur-MojangAPI
+OmniPurpur-Server
 *.jar

@@ -1,0 +1,304 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Pol Vallverdu <pvallverdualcaide@gmail.com>
+Date: Thu, 9 Feb 2023 16:12:56 +0100
+Subject: [PATCH] OmniPurpur Rebrand
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index f2f10df1e92bbba45f4e8521044dd9f6074929e3..9aa14e0ddcc41be5f760807d05dca87dd1584220 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -7,7 +7,8 @@ plugins {
+ }
+ 
+ dependencies {
+-    implementation(project(":tentacles-api")) // Purpur // Tentacles
++    implementation(project(":omnipurpur-api")) // Purpur // OmniPurpur
++    implementation(project(":omnipurpur-common")) // OmniPurpur
+     // Pufferfish start
+     implementation("io.papermc.paper:paper-mojangapi:1.19.3-R0.1-SNAPSHOT") {
+         exclude("io.papermc.paper", "paper-api")
+@@ -83,7 +84,7 @@ tasks.jar {
+         attributes(
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
+             "Implementation-Title" to "CraftBukkit",
+-            "Implementation-Version" to "git-Tentacles-$implementationVersion", // Purpur // Tentacles
++            "Implementation-Version" to "git-OmniPurpur-$implementationVersion", // Purpur // OmniPurpur
+             "Implementation-Vendor" to date, // Paper
+             "Specification-Title" to "Bukkit",
+             "Specification-Version" to project.version,
+diff --git a/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java b/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bb4adc4d42cd6079352aa73c9382ede8da2ecac
+--- /dev/null
++++ b/src/main/java/engineer/pol/omnipurpur/MultiPurpurConfig.java
+@@ -0,0 +1,157 @@
++package engineer.pol.multipurpur;
++
++import com.google.common.base.Throwables;
++import com.google.common.collect.ImmutableMap;
++import engineer.pol.multipurpur.command.MultiPurpurCommand;
++import engineer.pol.multipurpur.utils.EServerType;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.Bukkit;
++import org.bukkit.command.Command;
++import org.bukkit.configuration.ConfigurationSection;
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++import org.purpurmc.purpur.command.PurpurCommand;
++
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.logging.Level;
++
++public class MultiPurpurConfig {
++
++    private static final String HEADER = "This is the main configuration file for MultiPurpur.\n"
++            + "As you can see, there's tons to configure. Some options may impact gameplay, so use\n"
++            + "with caution, and make sure you know what each option does before configuring.\n"
++            //+ "\n"
++            //+ "If you need help with the configuration or have any questions related to Purpur,\n"
++            //+ "join us in our Discord guild.\n"
++            //+ "\n"
++            //+ "Website: https://purpurmc.org \n"
++            //+ "Docs: https://purpurmc.org/docs \n"
++            ;
++
++    private static File CONFIG_FILE;
++    public static YamlConfiguration config;
++
++    private static Map<String, Command> commands;
++
++    public static int version;
++
++    public static void init(File configFile) {
++        CONFIG_FILE = configFile;
++        config = new YamlConfiguration();
++        try {
++            config.load(CONFIG_FILE);
++        } catch (IOException ignore) {
++        } catch (InvalidConfigurationException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not load purpur.yml, please correct your syntax errors", ex);
++            throw Throwables.propagate(ex);
++        }
++        config.options().header(HEADER);
++        config.options().copyDefaults(true);
++
++        commands = new HashMap<>();
++        commands.put("multipurpur", new MultiPurpurCommand("multipurpur"));
++
++        version = getInt("config-version", 1);
++        set("config-version", 1);
++
++        readConfig(MultiPurpurConfig.class, null);
++    }
++
++    public static void registerCommands() {
++        for (Map.Entry<String, Command> entry : commands.entrySet()) {
++            MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Purpur", entry.getValue());
++        }
++    }
++
++    static void readConfig(Class<?> clazz, Object instance) {
++        for (Method method : clazz.getDeclaredMethods()) {
++            if (Modifier.isPrivate(method.getModifiers())) {
++                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
++                    try {
++                        method.setAccessible(true);
++                        method.invoke(instance);
++                    } catch (InvocationTargetException ex) {
++                        throw Throwables.propagate(ex.getCause());
++                    } catch (Exception ex) {
++                        Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, ex);
++                    }
++                }
++            }
++        }
++
++        try {
++            config.save(CONFIG_FILE);
++        } catch (IOException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, ex);
++        }
++    }
++
++    private static void set(String path, Object val) {
++        config.addDefault(path, val);
++        config.set(path, val);
++    }
++
++    private static String getString(String path, String def) {
++        config.addDefault(path, def);
++        return config.getString(path, config.getString(path));
++    }
++
++    private static boolean getBoolean(String path, boolean def) {
++        config.addDefault(path, def);
++        return config.getBoolean(path, config.getBoolean(path));
++    }
++
++    private static double getDouble(String path, double def) {
++        config.addDefault(path, def);
++        return config.getDouble(path, config.getDouble(path));
++    }
++
++    private static int getInt(String path, int def) {
++        config.addDefault(path, def);
++        return config.getInt(path, config.getInt(path));
++    }
++
++    private static <T> List getList(String path, T def) {
++        config.addDefault(path, def);
++        return config.getList(path, config.getList(path));
++    }
++
++    static Map<String, Object> getMap(String path, Map<String, Object> def) {
++        if (def != null && config.getConfigurationSection(path) == null) {
++            config.addDefault(path, def);
++            return def;
++        }
++        return toMap(config.getConfigurationSection(path));
++    }
++
++    private static Map<String, Object> toMap(ConfigurationSection section) {
++        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
++        if (section != null) {
++            for (String key : section.getKeys(false)) {
++                Object obj = section.get(key);
++                if (obj != null) {
++                    builder.put(key, obj instanceof ConfigurationSection val ? toMap(val) : obj);
++                }
++            }
++        }
++        return builder.build();
++    }
++
++    public static String redisUri = "redis://default:redispw@localhost:49153";
++    private static void redis() {
++        redisUri = getString("redis.uri", redisUri);
++    }
++
++    public static EServerType serverType = EServerType.SLAVE;
++    private static void serverConfig() {
++        serverType = EServerType.fromKey(getString("settings.type", "master"));
++    }
++
++}
+diff --git a/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java b/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..96da4656e5b369841c4f26dc774c8430af10edde
+--- /dev/null
++++ b/src/main/java/engineer/pol/omnipurpur/MultiPurpurEngine.java
+@@ -0,0 +1,22 @@
++package engineer.pol.multipurpur;
++
++import engineer.pol.multipurpur.database.RedisClient;
++import engineer.pol.multipurpur.utils.EServerType;
++
++public class MultiPurpurEngine {
++
++    public static RedisClient redisClient = null;
++
++    public static void init() {
++        redisClient = new RedisClient(MultiPurpurConfig.redisUri);
++    }
++
++    public static boolean isMaster() {
++        return MultiPurpurConfig.serverType == EServerType.MASTER;
++    }
++
++    public static boolean isSlave() {
++        return MultiPurpurConfig.serverType == EServerType.SLAVE;
++    }
++
++}
+diff --git a/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java b/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..71a69ef90e38449cb8724b3f7e831de96b340a81
+--- /dev/null
++++ b/src/main/java/engineer/pol/omnipurpur/command/MultiPurpurCommand.java
+@@ -0,0 +1,65 @@
++package engineer.pol.multipurpur.command;
++
++import engineer.pol.multipurpur.MultiPurpurConfig;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.ChatColor;
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++
++import java.io.File;
++import java.util.Collections;
++import java.util.List;
++import java.util.stream.Collectors;
++import java.util.stream.Stream;
++
++public class MultiPurpurCommand extends Command {
++
++    public MultiPurpurCommand(String name) {
++        super(name);
++        this.description = "MultiPurpur related commands";
++        this.usageMessage = "/multipurpur [reload | version]";
++        this.setPermission("bukkit.command.multipurpur");
++    }
++
++    @Override
++    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
++        if (args.length == 1) {
++            return Stream.of("reload", "version")
++                    .filter(arg -> arg.startsWith(args[0].toLowerCase()))
++                    .collect(Collectors.toList());
++        }
++        return Collections.emptyList();
++    }
++
++    @Override
++    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
++        if (!testPermission(sender)) return true;
++
++        if (args.length != 1) {
++            sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
++            return false;
++        }
++
++        if (args[0].equalsIgnoreCase("reload")) {
++            Command.broadcastCommandMessage(sender, ChatColor.RED + "Please note that this command is not supported and may cause issues.");
++            Command.broadcastCommandMessage(sender, ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server.");
++
++            MinecraftServer console = MinecraftServer.getServer();
++            MultiPurpurConfig.init((File) console.options.valueOf("multipurpur-settings"));
++            console.server.reloadCount++;
++
++            // TODO: RELOAD REDIS CONNECTION?
++
++            Command.broadcastCommandMessage(sender, ChatColor.GREEN + "MultiPurpur config reload complete.");
++        } else if (args[0].equalsIgnoreCase("version")) {
++            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
++            if (verCmd != null) {
++                return verCmd.execute(sender, commandLabel, new String[0]);
++            }
++        }
++
++        return true;
++    }
++
++}
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index ddc3eabdc8acc506661fa8cd444d5a238828c709..caf1f3e9a27bdba54b47978a1d81ea8bece66156 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -227,7 +227,7 @@ public class PurpurConfig {
+         deathMessageOnlyBroadcastToAffectedPlayer = getBoolean("settings.broadcasts.death.only-broadcast-to-affected-player", deathMessageOnlyBroadcastToAffectedPlayer);
+     }
+ 
+-    public static String serverModName = "Tentacles"; // Tentacles
++    public static String serverModName = "OmniPurpur"; // OmniPurpur
+     private static void serverModName() {
+         serverModName = getString("settings.server-mod-name", serverModName);
+     }
