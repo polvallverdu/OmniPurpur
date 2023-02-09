@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 rootProject.name = "omnipurpur"
-for (name in listOf("OmniPurpur-API", "OmniPurpur-Server", "OmniPurpur-Common")) {
+for (name in listOf("OmniPurpur-API", "OmniPurpur-Server", "OmniPurpur-Common", "OmniPurpur-Bridge")) {
     val projName = name.toLowerCase(Locale.ENGLISH)
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)
